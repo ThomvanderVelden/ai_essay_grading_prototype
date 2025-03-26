@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Student - AI Essay Grading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Edit Student</h2>
+    <a href="{{ url_for('view_student', student_id=student.id) }}" class="btn btn-outline-primary">Back to Student</a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Student Details</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label">Student Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ student.name }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">Email (Optional)</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ student.email or '' }}">
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('view_student', student_id=student.id) }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

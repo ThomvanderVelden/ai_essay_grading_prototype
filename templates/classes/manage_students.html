@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Students - {{ class_obj.name }} - AI Essay Grading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Manage Students in {{ class_obj.name }}</h2>
+    <a href="{{ url_for('view_class', class_id=class_obj.id) }}" class="btn btn-outline-primary">Back to Class</a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Select Students for this Class</h4>
+    </div>
+    <div class="card-body">
+        {% if all_students %}
+        <form method="post">
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><strong>Available Students:</strong> {{ all_students|length }}</span>
+                    <span>
+                        <button type="button" class="btn btn-sm btn-outline-primary select-all">Select All</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary clear-all">Clear All</button>
+                    </span>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;"></th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Classes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in all_students %}
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input student-checkbox" type="checkbox" 
+                                               name="student_ids" value="{{ student.id }}" 
+                                               id="student{{ student.id }}"
+                                               {% if student in class_obj.students %}checked{% endif %}>
+                                    </div>
+                                </td>
+                                <td><label for="student{{ student.id }}">{{ student.name }}</label></td>
+                                <td>{{ student.email or 'N/A' }}</td>
+                                <td>{{ student.classes|length }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('view_class', class_id=class_obj.id) }}" class="btn btn-secondary">Cancel</a>
+                <div>
+                    <a href="{{ url_for('create_student') }}" class="btn btn-outline-success me-2">Add New Student</a>
+                    <button type="submit" class="btn btn-primary">Save Students</button>
+                </div>
+            </div>
+        </form>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const selectAllBtn = document.querySelector('.select-all');
+                const clearAllBtn = document.querySelector('.clear-all');
+                const checkboxes = document.querySelectorAll('.student-checkbox');
+                
+                selectAllBtn.addEventListener('click', function() {
+                    checkboxes.forEach(cb => cb.checked = true);
+                });
+                
+                clearAllBtn.addEventListener('click', function() {
+                    checkboxes.forEach(cb => cb.checked = false);
+                });
+            });
+        </script>
+        {% else %}
+        <div class="alert alert-info">
+            <p>You haven't added any students yet.</p>
+            <div class="mt-2">
+                <a href="{{ url_for('create_student') }}" class="btn btn-primary">Add a Student</a>
+                <a href="{{ url_for('bulk_create_students') }}" class="btn btn-outline-primary ms-2">Bulk Add Students</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

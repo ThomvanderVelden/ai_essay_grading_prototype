@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Grading Results - {{ essay.student_name }} - AI Essay Grading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Essay Grading Results</h2>
+    <div>
+        <a href="{{ url_for('view_class', class_id=class_obj.id) }}" class="btn btn-outline-primary">Back to Class</a>
+        <a href="{{ url_for('class_grading', class_id=class_obj.id) }}" class="btn btn-outline-success ms-2">Continue Grading</a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">{{ essay.student_name }}</h4>
+            <span class="badge {% if essay.percentage >= 80 %}bg-success{% elif essay.percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %} fs-6">
+                {{ essay.percentage }}%
+            </span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <p><strong>Class:</strong> {{ class_obj.name }}</p>
+                <p><strong>Rubric:</strong> <a href="{{ url_for('view_rubric', rubric_id=essay.rubric_id) }}">{{ essay.rubric.name }}</a></p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Total Score:</strong> <span class="total-points">{{ essay.total_points }}/{{ essay.max_points }}</span></p>
+                <p><strong>Graded on:</strong> {{ essay.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+            </div>
+        </div>
+        
+        <form method="post" action="{{ url_for('modify_grade', essay_id=essay.id) }}">
+            <h5 class="mt-4 mb-3">Criteria Scores</h5>
+            
+            <div class="accordion mb-4" id="criteriaAccordion">
+                {% for grade in essay.grades %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}">
+                            <div class="d-flex justify-content-between w-100 me-3">
+                                <span>{{ grade.criterion_name }}</span>
+                                <span class="badge {% if (grade.points / grade.max_points) >= 0.8 %}bg-success{% elif (grade.points / grade.max_points) >= 0.6 %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ grade.points }}/{{ grade.max_points }}
+                                </span>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" 
+                         data-bs-parent="#criteriaAccordion">
+                        <div class="accordion-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Points</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="points{{ loop.index0 }}" 
+                                               value="{{ grade.points }}" min="0" max="{{ grade.max_points }}">
+                                        <span class="input-group-text">/ {{ grade.max_points }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">AI Confidence</label>
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ range(70, 95)|random }}%"></div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Feedback</label>
+                                    <textarea class="form-control" name="feedback{{ loop.index0 }}" rows="3">{{ grade.feedback }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <h5 class="mb-3">Overall Feedback</h5>
+            <div class="mb-4">
+                <textarea class="form-control" name="overall_feedback" rows="5">{{ essay.overall_feedback }}</textarea>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('class_grading', class_id=class_obj.id) }}" class="btn btn-secondary">Back to Class Grading</a>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

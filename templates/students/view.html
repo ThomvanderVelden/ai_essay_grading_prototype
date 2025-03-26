@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student.name }} - AI Essay Grading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Student Profile</h2>
+    <div>
+        <a href="{{ url_for('edit_student', student_id=student.id) }}" class="btn btn-outline-primary">Edit Student</a>
+        <a href="{{ url_for('view_students') }}" class="btn btn-outline-secondary ms-2">Back to Students</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{{ student.name }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Email:</strong> {{ student.email or 'Not provided' }}
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Added on:</strong> {{ student.created_at.strftime('%B %d, %Y') }}
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Enrolled in {{ student.classes|length }} classes:</strong>
+                    {% if student.classes %}
+                    <ul class="mt-2">
+                        {% for class_obj in student.classes %}
+                        <li>
+                            <a href="{{ url_for('view_class', class_id=class_obj.id) }}">{{ class_obj.name }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted mt-2">Not enrolled in any classes</p>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-primary" 
+                            data-bs-toggle="modal" data-bs-target="#enrollClassModal">
+                        Enroll in Class
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Graded Essays</h4>
+                    <span class="badge bg-light text-dark">Total: {{ essays|length }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if essays %}
+                <div class="list-group">
+                    {% for essay in essays %}
+                    <a href="{{ url_for('view_results', essay_id=essay.id) }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">
+                                {% if essay.class_id %}
+                                {{ essay.class_ref.name }}
+                                {% else %}
+                                Individual Assessment
+                                {% endif %}
+                            </h5>
+                            <span class="badge {% if essay.percentage >= 80 %}bg-success{% elif essay.percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}">
+                                {{ essay.percentage }}%
+                            </span>
+                        </div>
+                        <p class="mb-1">Rubric: {{ essay.rubric.name }}</p>
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">Score: {{ essay.total_points }}/{{ essay.max_points }}</small>
+                            <small class="text-muted">{{ essay.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <p>No essays have been graded for this student yet.</p>
+                    <a href="{{ url_for('upload_essay') }}" class="btn btn-primary mt-2">Grade an Essay</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enroll Class Modal -->
+<div class="modal fade" id="enrollClassModal" tabindex="-1" aria-labelledby="enrollClassModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="enrollClassModalLabel">Enroll in Class</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Select classes to enroll this student:</p>
+                <form id="enrollForm" action="#" method="post">
+                    <div id="classCheckboxes">
+                        <!-- Will be populated via JavaScript -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEnrollments">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // This would be populated from the server in a real implementation
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('enrollClassModal');
+        
+        modal.addEventListener('show.bs.modal', function() {
+            // This would be an AJAX call to fetch available classes in a real app
+            const classCheckboxes = document.getElementById('classCheckboxes');
+            classCheckboxes.innerHTML = '<p class="text-muted">Loading available classes...</p>';
+            
+            // Simulate data loading
+            setTimeout(() => {
+                classCheckboxes.innerHTML = 'In a real implementation, this would show checkboxes for available classes.';
+            }, 500);
+        });
+    });
+</script>
+{% endblock %}

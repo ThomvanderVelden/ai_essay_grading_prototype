@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}{{ rubric.name }} - AI Essay Grading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Rubric Details</h2>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">Back to Dashboard</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">{{ rubric.name }}</h4>
+            <span class="badge bg-light text-dark">Created {{ rubric.created_at.strftime('%b %d, %Y') }}</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <h5 class="mb-4">Criteria</h5>
+        
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Criterion</th>
+                        <th>Maximum Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for criterion in rubric.criteria %}
+                    <tr>
+                        <td>{{ criterion.name }}</td>
+                        <td>{{ criterion.max_points }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="table-primary">
+                        <td><strong>Total</strong></td>
+                        <td><strong>{{ rubric.criteria|sum(attribute='max_points') }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h5 class="mt-4 mb-3">Essays Graded with this Rubric</h5>
+        
+        {% if rubric.essays %}
+        <div class="list-group">
+            {% for essay in rubric.essays %}
+            <a href="{{ url_for('view_results', essay_id=essay.id) }}" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ essay.student_name }}</h6>
+                    <span class="badge {% if essay.percentage >= 80 %}bg-success{% elif essay.percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}">
+                        {{ essay.percentage }}%
+                    </span>
+                </div>
+                <small>{{ essay.created_at.strftime('%b %d, %Y') }}</small>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">No essays have been graded with this rubric yet.</div>
+        {% endif %}
+        
+        <div class="mt-4">
+            <a href="{{ url_for('upload_essay') }}" class="btn btn-primary">Grade an Essay with this Rubric</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

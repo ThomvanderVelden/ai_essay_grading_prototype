@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Grade Essay - {{ student.name }} - AI Essay Grading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Grade Essay for {{ student.name }}</h2>
+    <a href="{{ url_for('class_grading', class_id=class_obj.id) }}" class="btn btn-outline-primary">Back to Class Grading</a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Submit Essay</h4>
+            <span class="badge bg-light text-dark">Class: {{ class_obj.name }}</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Student:</strong> {{ student.name }}</p>
+                    {% if student.email %}
+                    <p><strong>Email:</strong> {{ student.email }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Rubric:</strong> <a href="{{ url_for('view_rubric', rubric_id=class_obj.rubric_id) }}">{{ class_obj.assigned_rubric.name }}</a></p>
+                    <p><strong>Max Points:</strong> {{ class_obj.assigned_rubric.criteria|sum(attribute='max_points') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="essay" class="form-label">Upload Essay (PDF, DOC or TXT)</label>
+                <input class="form-control" type="file" id="essay" name="essay" accept=".pdf,.doc,.docx,.txt">
+            </div>
+            
+            <div class="mb-3">
+                <label for="essay_text" class="form-label">Or Paste Essay Text</label>
+                <textarea class="form-control" id="essay_text" name="essay_text" rows="10" 
+                          placeholder="You can paste the essay text here if you don't have a file to upload..."></textarea>
+                <div class="form-text">Either upload a file or paste the text.</div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('class_grading', class_id=class_obj.id) }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Submit for Grading</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

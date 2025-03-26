@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}My Classes - AI Essay Grading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Classes</h2>
+    <a href="{{ url_for('create_class') }}" class="btn btn-primary">Create New Class</a>
+</div>
+
+{% if classes %}
+<div class="row">
+    {% for class_obj in classes %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ class_obj.name }}</h5>
+            </div>
+            <div class="card-body">
+                {% if class_obj.description %}
+                <p class="card-text">{{ class_obj.description }}</p>
+                {% endif %}
+                
+                <div class="d-flex justify-content-between mb-3">
+                    <span><strong>Students:</strong> {{ class_obj.students|length }}</span>
+                    <span><strong>Created:</strong> {{ class_obj.created_at.strftime('%b %d, %Y') }}</span>
+                </div>
+                
+                {% if class_obj.rubric_id %}
+                <p><strong>Assigned Rubric:</strong> {{ class_obj.assigned_rubric.name }}</p>
+                {% else %}
+                <p class="text-warning"><em>No rubric assigned</em></p>
+                {% endif %}
+                
+                <div class="mt-3">
+                    <a href="{{ url_for('view_class', class_id=class_obj.id) }}" class="btn btn-outline-primary">View Class</a>
+                    <a href="{{ url_for('class_grading', class_id=class_obj.id) }}" class="btn btn-outline-success ms-2">Grade Essays</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    <p>You haven't created any classes yet.</p>
+    <a href="{{ url_for('create_class') }}" class="btn btn-primary mt-2">Create Your First Class</a>
+</div>
+{% endif %}
+
+<div class="card mt-4">
+    <div class="card-body">
+        <h5>Quick Links</h5>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="d-grid">
+                    <a href="{{ url_for('view_students') }}" class="btn btn-outline-primary">Manage Students</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-grid">
+                    <a href="{{ url_for('create_class') }}" class="btn btn-outline-success">Create Class</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-grid">
+                    <a href="{{ url_for('create_rubric') }}" class="btn btn-outline-info">Create Rubric</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

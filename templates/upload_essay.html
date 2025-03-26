@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Essay - AI Essay Grading{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Upload Essay for Grading</h2>
+
+{% if rubrics %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Essay Details</h4>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="student_name" class="form-label">Student Name</label>
+                <input type="text" class="form-control" id="student_name" name="student_name" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="rubric" class="form-label">Select Rubric</label>
+                <select class="form-select" id="rubric" name="rubric" required>
+                    {% for rubric in rubrics %}
+                    <option value="{{ rubric.id }}">{{ rubric.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="essay" class="form-label">Upload Essay (PDF, DOC or TXT)</label>
+                <input class="form-control" type="file" id="essay" name="essay" accept=".pdf,.doc,.docx,.txt" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="essay_text" class="form-label">Or Paste Essay Text</label>
+                <textarea class="form-control" id="essay_text" rows="10" placeholder="You can paste the essay text here if you don't have a file to upload..."></textarea>
+                <div class="form-text">Either upload a file or paste the text.</div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Submit for Grading</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-warning">
+    <p>You need to create at least one rubric before you can upload essays for grading.</p>
+    <a href="{{ url_for('create_rubric') }}" class="btn btn-primary mt-2">Create Rubric</a>
+</div>
+{% endif %}
+
+{% endblock %}

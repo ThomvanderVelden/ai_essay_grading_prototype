@@ -1,0 +1,431 @@
+{% extends "base.html" %}
+
+{% block title %}Create Rubric - AI Essay Grading{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Create New Rubric</h2>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Rubric Details</h4>
+    </div>
+    <div class="card-body">
+        <form method="post" id="rubricForm">
+            <div class="mb-3">
+                <label for="name" class="form-label">Rubric Name</label>
+                <input type="text" class="form-control" id="name" name="name" required 
+                       placeholder="e.g. Literary Analysis Essay, Research Paper">
+            </div>
+            
+            <hr>
+            <h5 class="mb-3">Criteria</h5>
+            
+            <!-- Hidden input to track the number of criteria -->
+            <input type="hidden" id="criteria_count" name="criteria_count" value="3">
+            
+            <div id="criteria_container">
+                <!-- Criterion 1 -->
+                <div class="criterion-section mb-4 card">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Criterion 1</h5>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-criterion" disabled>Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Criterion Name</label>
+                                <input type="text" class="form-control" name="criterion1" required
+                                       placeholder="e.g. HTML Structure, Content Analysis, Grammar">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Max Points</label>
+                                <select class="form-select max-points-select" name="points1" data-criterion-index="1" required>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5" selected>5</option>
+                                    <option value="6">6</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="point-descriptions mb-3">
+                            <label class="form-label">Point Descriptions</label>
+                            <p class="text-muted small">Describe what is required to earn each point level.</p>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 20%;">Points</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="point-descriptions-body" data-criterion-index="1">
+                                        <tr>
+                                            <td>1 Point</td>
+                                            <td><input type="text" class="form-control" name="criterion1_point1" placeholder="Poor performance (e.g., Unorganized, missing or incorrect elements)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion1_point2" placeholder="Below average performance (e.g., Basic structure, several errors)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>3 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion1_point3" placeholder="Average performance (e.g., Correct basic structure, some minor errors)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>4 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion1_point4" placeholder="Good performance (e.g., Well structured, minimal errors)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>5 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion1_point5" placeholder="Excellent performance (e.g., Perfectly structured, no errors)"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Criterion 2 -->
+                <div class="criterion-section mb-4 card">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Criterion 2</h5>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-criterion">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Criterion Name</label>
+                                <input type="text" class="form-control" name="criterion2" required
+                                       placeholder="e.g. CSS Styling, Organization, Clarity">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Max Points</label>
+                                <select class="form-select max-points-select" name="points2" data-criterion-index="2" required>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5" selected>5</option>
+                                    <option value="6">6</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="point-descriptions mb-3">
+                            <label class="form-label">Point Descriptions</label>
+                            <p class="text-muted small">Describe what is required to earn each point level.</p>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 20%;">Points</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="point-descriptions-body" data-criterion-index="2">
+                                        <tr>
+                                            <td>1 Point</td>
+                                            <td><input type="text" class="form-control" name="criterion2_point1" placeholder="Poor performance (e.g., No or minimal styling, incoherent)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion2_point2" placeholder="Below average performance (e.g., Basic styling, limited use of elements)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>3 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion2_point3" placeholder="Average performance (e.g., Adequate styling, elements used appropriately)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>4 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion2_point4" placeholder="Good performance (e.g., Good styling, visually appealing)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>5 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion2_point5" placeholder="Excellent performance (e.g., Outstanding styling, very attractive and consistent)"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Criterion 3 -->
+                <div class="criterion-section mb-4 card">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Criterion 3</h5>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-criterion">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Criterion Name</label>
+                                <input type="text" class="form-control" name="criterion3" required
+                                       placeholder="e.g. JavaScript Usage, Evidence, Research">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Max Points</label>
+                                <select class="form-select max-points-select" name="points3" data-criterion-index="3" required>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5" selected>5</option>
+                                    <option value="6">6</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="point-descriptions mb-3">
+                            <label class="form-label">Point Descriptions</label>
+                            <p class="text-muted small">Describe what is required to earn each point level.</p>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 20%;">Points</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="point-descriptions-body" data-criterion-index="3">
+                                        <tr>
+                                            <td>1 Point</td>
+                                            <td><input type="text" class="form-control" name="criterion3_point1" placeholder="Poor performance (e.g., No JavaScript used, non-functional)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion3_point2" placeholder="Below average performance (e.g., Very limited use, barely functional)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>3 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion3_point3" placeholder="Average performance (e.g., Basic implementation, functional)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>4 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion3_point4" placeholder="Good performance (e.g., Good implementation, adds value)"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>5 Points</td>
+                                            <td><input type="text" class="form-control" name="criterion3_point5" placeholder="Excellent performance (e.g., Excellent implementation, adds significant value)"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="button" id="add-criterion" class="btn btn-outline-success mb-4">+ Add Another Criterion</button>
+            
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create Rubric</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update table rows when max points change
+    document.querySelectorAll('.max-points-select').forEach(select => {
+        select.addEventListener('change', function() {
+            updatePointDescriptionsTable(this);
+        });
+    });
+    
+    // Add criterion button
+    document.getElementById('add-criterion').addEventListener('click', function() {
+        const criteriaCount = parseInt(document.getElementById('criteria_count').value);
+        const newIndex = criteriaCount + 1;
+        
+        // Create new criterion HTML
+        const newCriterion = document.createElement('div');
+        newCriterion.className = 'criterion-section mb-4 card';
+        newCriterion.innerHTML = `
+            <div class="card-header bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Criterion ${newIndex}</h5>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-criterion">Remove</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label">Criterion Name</label>
+                        <input type="text" class="form-control" name="criterion${newIndex}" required
+                               placeholder="e.g. Additional Criterion">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Max Points</label>
+                        <select class="form-select max-points-select" name="points${newIndex}" data-criterion-index="${newIndex}" required>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5" selected>5</option>
+                            <option value="6">6</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="point-descriptions mb-3">
+                    <label class="form-label">Point Descriptions</label>
+                    <p class="text-muted small">Describe what is required to earn each point level.</p>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%;">Points</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody class="point-descriptions-body" data-criterion-index="${newIndex}">
+                                <tr>
+                                    <td>1 Point</td>
+                                    <td><input type="text" class="form-control" name="criterion${newIndex}_point1" placeholder="Poor performance"></td>
+                                </tr>
+                                <tr>
+                                    <td>2 Points</td>
+                                    <td><input type="text" class="form-control" name="criterion${newIndex}_point2" placeholder="Below average performance"></td>
+                                </tr>
+                                <tr>
+                                    <td>3 Points</td>
+                                    <td><input type="text" class="form-control" name="criterion${newIndex}_point3" placeholder="Average performance"></td>
+                                </tr>
+                                <tr>
+                                    <td>4 Points</td>
+                                    <td><input type="text" class="form-control" name="criterion${newIndex}_point4" placeholder="Good performance"></td>
+                                </tr>
+                                <tr>
+                                    <td>5 Points</td>
+                                    <td><input type="text" class="form-control" name="criterion${newIndex}_point5" placeholder="Excellent performance"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('criteria_container').appendChild(newCriterion);
+        document.getElementById('criteria_count').value = newIndex;
+        
+        // Add event listener to the new criterion's max points select
+        const newSelect = newCriterion.querySelector('.max-points-select');
+        newSelect.addEventListener('change', function() {
+            updatePointDescriptionsTable(this);
+        });
+        
+        // Add event listener to remove button
+        const removeBtn = newCriterion.querySelector('.remove-criterion');
+        removeBtn.addEventListener('click', function() {
+            removeCriterion(this);
+        });
+    });
+    
+    // Initial setup for remove buttons
+    document.querySelectorAll('.remove-criterion').forEach(button => {
+        button.addEventListener('click', function() {
+            removeCriterion(this);
+        });
+    });
+    
+    // Function to update point descriptions table based on selected max points
+    function updatePointDescriptionsTable(selectElement) {
+        const maxPoints = parseInt(selectElement.value);
+        const criterionIndex = selectElement.getAttribute('data-criterion-index');
+        const tableBody = selectElement.closest('.criterion-section').querySelector('.point-descriptions-body');
+        
+        // Clear existing rows
+        tableBody.innerHTML = '';
+        
+        // Add rows for each point level
+        for (let i = 1; i <= maxPoints; i++) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${i} Point${i > 1 ? 's' : ''}</td>
+                <td><input type="text" class="form-control" name="criterion${criterionIndex}_point${i}" 
+                    placeholder="${getDefaultDescription(i, maxPoints)}"></td>
+            `;
+            tableBody.appendChild(row);
+        }
+    }
+    
+    // Function to remove a criterion
+    function removeCriterion(button) {
+        const criteriaCount = parseInt(document.getElementById('criteria_count').value);
+        
+        // Prevent removing if only one criterion remains
+        if (criteriaCount <= 1) {
+            return;
+        }
+        
+        const criterionSection = button.closest('.criterion-section');
+        criterionSection.remove();
+        
+        // Renumber remaining criteria
+        const remainingSections = document.querySelectorAll('.criterion-section');
+        remainingSections.forEach((section, index) => {
+            const newIndex = index + 1;
+            
+            // Update heading
+            section.querySelector('h5').textContent = `Criterion ${newIndex}`;
+            
+            // Update input names
+            const nameInput = section.querySelector('input[name^="criterion"]');
+            nameInput.name = `criterion${newIndex}`;
+            
+            // Update points select
+            const pointsSelect = section.querySelector('select[name^="points"]');
+            pointsSelect.name = `points${newIndex}`;
+            pointsSelect.setAttribute('data-criterion-index', newIndex);
+            
+            // Update table body
+            const tableBody = section.querySelector('.point-descriptions-body');
+            tableBody.setAttribute('data-criterion-index', newIndex);
+            
+            // Update point description input names
+            const descInputs = section.querySelectorAll('input[name^="criterion"]');
+            descInputs.forEach(input => {
+                const pointNumber = input.name.split('_point')[1];
+                if (pointNumber) {
+                    input.name = `criterion${newIndex}_point${pointNumber}`;
+                }
+            });
+        });
+        
+        document.getElementById('criteria_count').value = remainingSections.length;
+        
+        // Disable remove button if only one criterion remains
+        if (remainingSections.length === 1) {
+            remainingSections[0].querySelector('.remove-criterion').disabled = true;
+        }
+    }
+    
+    // Helper function to generate default description placeholders
+    function getDefaultDescription(points, maxPoints) {
+        if (points === 1) return "Poor performance";
+        if (points === maxPoints) return "Excellent performance";
+        if (points === Math.ceil(maxPoints / 2)) return "Average performance";
+        if (points < Math.ceil(maxPoints / 2)) return "Below average performance";
+        return "Good performance";
+    }
+});
+</script>
+{% endblock %}

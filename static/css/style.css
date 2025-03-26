@@ -1,0 +1,107 @@
+/* Custom styles for AI Essay Grading System */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Navbar */
+.navbar {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 5px;
+    padding: 8px 16px;
+}
+
+/* Form elements */
+.form-control, .form-select {
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid #ced4da;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    border-color: #86b7fe;
+}
+
+/* Rubric criteria in dashboard */
+.list-group-item {
+    transition: all 0.2s ease-in-out;
+}
+
+.list-group-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Processing page */
+.spinner-border {
+    animation-duration: 1.5s;
+}
+
+/* Grading result badges */
+.badge {
+    font-size: 0.85em;
+    padding: 6px 10px;
+}
+
+/* Quick start guide */
+.fs-1 {
+    font-weight: bold;
+}
+
+/* Login page */
+.login-form {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+/* Footer */
+footer {
+    border-top: 1px solid #dee2e6;
+    margin-top: 50px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    h2 {
+        font-size: 1.75rem;
+    }
+}
+
+/* Animation for processing page */
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.status-pulse {
+    animation: pulse 2s infinite;
+}

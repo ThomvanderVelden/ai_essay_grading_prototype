@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}{{ class_obj.name }} - AI Essay Grading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ class_obj.name }}</h2>
+    <div>
+        <a href="{{ url_for('edit_class', class_id=class_obj.id) }}" class="btn btn-outline-primary">Edit Class</a>
+        <a href="{{ url_for('view_classes') }}" class="btn btn-outline-secondary ms-2">Back to Classes</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Class Details</h5>
+            </div>
+            <div class="card-body">
+                {% if class_obj.description %}
+                <p>{{ class_obj.description }}</p>
+                <hr>
+                {% endif %}
+                
+                <p><strong>Created on:</strong> {{ class_obj.created_at.strftime('%B %d, %Y') }}</p>
+                
+                <div class="mb-3">
+                    <strong>Assigned Rubric:</strong>
+                    {% if class_obj.rubric_id %}
+                    <a href="{{ url_for('view_rubric', rubric_id=class_obj.rubric_id) }}">{{ class_obj.assigned_rubric.name }}</a>
+                    {% else %}
+                    <span class="text-warning">None</span>
+                    <a href="{{ url_for('edit_class', class_id=class_obj.id) }}" class="btn btn-sm btn-outline-primary ms-2">Assign Rubric</a>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('manage_class_students', class_id=class_obj.id) }}" class="btn btn-outline-primary">Manage Students</a>
+                    <a href="{{ url_for('class_grading', class_id=class_obj.id) }}" class="btn btn-success">Grade Essays</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Students ({{ students|length }})</h5>
+                    <a href="{{ url_for('manage_class_students', class_id=class_obj.id) }}" class="btn btn-sm btn-light">Manage</a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if students %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Graded</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.email or 'N/A' }}</td>
+                                <td>
+                                    {% if student.id in essays_by_student %}
+                                    <span class="badge bg-success">Yes</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">No</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if student.id in essays_by_student %}
+                                    <a href="{{ url_for('view_student', student_id=student.id) }}" class="btn btn-sm btn-outline-info">View Grades</a>
+                                    {% else %}
+                                    <a href="{{ url_for('grade_student_essay', class_id=class_obj.id, student_id=student.id) }}" class="btn btn-sm btn-outline-success">Grade</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No students in this class yet.</p>
+                <a href="{{ url_for('manage_class_students', class_id=class_obj.id) }}" class="btn btn-outline-primary">Add Students</a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Graded Essays</h5>
+            </div>
+            <div class="card-body">
+                {% if essays_by_student %}
+                <div class="list-group">
+                    {% for student_id, essays in essays_by_student.items() %}
+                        {% for essay in essays %}
+                        <a href="{{ url_for('view_results', essay_id=essay.id) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ essay.student_name }}</h5>
+                                <span class="badge {% if essay.percentage >= 80 %}bg-success{% elif essay.percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ essay.percentage }}%
+                                </span>
+                            </div>
+                            <p class="mb-1">Rubric: {{ essay.rubric.name }}</p>
+                            <small class="text-muted">Graded on {{ essay.created_at.strftime('%b %d, %Y') }}</small>
+                        </a>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No essays have been graded for this class yet.</p>
+                {% if class_obj.rubric_id %}
+                <a href="{{ url_for('class_grading', class_id=class_obj.id) }}" class="btn btn-outline-success">Start Grading</a>
+                {% else %}
+                <div class="alert alert-warning">
+                    <p>You need to assign a rubric to this class before you can grade essays.</p>
+                    <a href="{{ url_for('edit_class', class_id=class_obj.id) }}" class="btn btn-outline-primary">Assign Rubric</a>
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

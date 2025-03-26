@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Essay Grading{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">My Classes</h4>
+                    <a href="{{ url_for('view_classes') }}" class="btn btn-sm btn-light">View All</a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if classes %}
+                <div class="list-group">
+                    {% for class_obj in classes[:3] %}
+                    <a href="{{ url_for('view_class', class_id=class_obj.id) }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ class_obj.name }}</h5>
+                            <small>{{ class_obj.students|length }} students</small>
+                        </div>
+                        <p class="mb-1">
+                            {% if class_obj.rubric_id %}
+                            <span class="badge bg-success">Rubric: {{ class_obj.assigned_rubric.name }}</span>
+                            {% else %}
+                            <span class="badge bg-warning">No rubric assigned</span>
+                            {% endif %}
+                        </p>
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                {% if classes|length > 3 %}
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{{ url_for('view_classes') }}" class="btn btn-outline-primary">View All ({{ classes|length }}) Classes</a>
+                </div>
+                {% endif %}
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{{ url_for('create_class') }}" class="btn btn-primary">Create New Class</a>
+                </div>
+                {% else %}
+                <p class="text-muted">You haven't created any classes yet.</p>
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{{ url_for('create_class') }}" class="btn btn-primary">Create Your First Class</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">My Students</h4>
+                    <a href="{{ url_for('view_students') }}" class="btn btn-sm btn-light">View All</a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if students_count > 0 %}
+                <p>You have {{ students_count }} students in your database.</p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('view_students') }}" class="btn btn-outline-primary">Manage Students</a>
+                    <a href="{{ url_for('create_student') }}" class="btn btn-primary">Add New Student</a>
+                </div>
+                {% else %}
+                <p class="text-muted">You haven't added any students yet.</p>
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{{ url_for('create_student') }}" class="btn btn-primary">Add Your First Student</a>
+                    <a href="{{ url_for('bulk_create_students') }}" class="btn btn-outline-primary">Bulk Import Students</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">My Rubrics</h4>
+                    <a href="{{ url_for('create_rubric') }}" class="btn btn-sm btn-light">Create New</a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if rubrics %}
+                <div class="list-group">
+                    {% for rubric in rubrics[:3] %}
+                    <a href="{{ url_for('view_rubric', rubric_id=rubric.id) }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ rubric.name }}</h5>
+                            <small class="text-muted">{{ rubric.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                        <p class="mb-1">
+                            <strong>Criteria:</strong> 
+                            {% for criterion in rubric.criteria %}
+                                {{ criterion.name }} ({{ criterion.max_points }} pts){% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                {% if rubrics|length > 3 %}
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{{ url_for('create_rubric') }}" class="btn btn-outline-primary">View All ({{ rubrics|length }}) Rubrics</a>
+                </div>
+                {% endif %}
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{{ url_for('create_rubric') }}" class="btn btn-primary">Create New Rubric</a>
+                </div>
+                {% else %}
+                <p class="text-muted">You haven't created any rubrics yet.</p>
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{{ url_for('create_rubric') }}" class="btn btn-primary">Create Your First Rubric</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Recent Graded Essays</h4>
+                    <span class="badge bg-light text-dark">{{ graded_essays|length }} Total</span>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if graded_essays %}
+                <div class="list-group">
+                    {% for essay in graded_essays[:5] %}
+                    <a href="{{ url_for('view_results', essay_id=essay.id) }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ essay.student_name }}</h5>
+                            <span class="badge {% if essay.percentage >= 80 %}bg-success{% elif essay.percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}">
+                                {{ essay.percentage }}%
+                            </span>
+                        </div>
+                        <p class="mb-1">Rubric: {{ essay.rubric.name }}</p>
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">Score: {{ essay.total_points }}/{{ essay.max_points }}</small>
+                            <small class="text-muted">{{ essay.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                {% if graded_essays|length > 5 %}
+                <div class="d-grid gap-2 mt-3">
+                    <button type="button" class="btn btn-outline-primary view-more-essays">View More Essays</button>
+                </div>
+                {% endif %}
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{{ url_for('upload_essay') }}" class="btn btn-primary">Grade New Essay</a>
+                </div>
+                {% else %}
+                <p class="text-muted">You haven't graded any essays yet.</p>
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{{ url_for('upload_essay') }}" class="btn btn-primary">Grade Your First Essay</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Quick Start Guide</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center mb-3">
+                            <div class="fs-1 text-primary">1</div>
+                            <h5>Create a Class</h5>
+                            <p>Set up a class and add your students</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center mb-3">
+                            <div class="fs-1 text-primary">2</div>
+                            <h5>Create a Rubric</h5>
+                            <p>Define criteria and points for assessment</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center mb-3">
+                            <div class="fs-1 text-primary">3</div>
+                            <h5>Assign Rubric to Class</h5>
+                            <p>Connect your rubric to a class</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center mb-3">
+                            <div class="fs-1 text-primary">4</div>
+                            <h5>Grade Essays</h5>
+                            <p>Upload and let AI grade student essays</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Processing Essay - AI Essay Grading{% endblock %}
+
+{% block content %}
+<div class="text-center my-5">
+    <h2>Processing Essay</h2>
+    <div class="spinner-border text-primary my-4" role="status" style="width: 4rem; height: 4rem;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="lead">Our AI is analyzing the essay for {{ student_name }}...</p>
+    <p class="text-muted">This may take a few moments. Please don't close this window.</p>
+    
+    <div class="progress mt-4" style="height: 30px;">
+        <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 10%"></div>
+    </div>
+    
+    <div id="status-message" class="mt-3 text-muted">Analyzing document structure...</div>
+</div>
+
+<script>
+    // Simulate progress
+    let progress = 10;
+    const messages = [
+        "Analyzing document structure...",
+        "Evaluating content and arguments...",
+        "Examining writing quality and style...",
+        "Checking citations and references...",
+        "Applying rubric criteria to the essay...",
+        "Running through Gemini LLM for intelligent assessment...",
+        "Evaluating strengths and areas for improvement...",
+        "Generating detailed feedback for each criterion...",
+        "Calculating overall score and recommendations...",
+        "Finalizing assessment and preparing results..."
+    ];
+    
+    const progressBar = document.getElementById('progress-bar');
+    const statusMessage = document.getElementById('status-message');
+    let messageIndex = 0;
+    
+    const interval = setInterval(() => {
+        progress += 3;  // Slower progress to account for actual LLM processing time
+        progressBar.style.width = `${progress}%`;
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+            {% if class_id and student_id %}
+            // Fix: Remove the "amp;" part from the URL - this was causing incorrect URL generation
+            window.location.href = "/generate_results?class_id={{ class_id }}&student_id={{ student_id }}";
+            {% else %}
+            window.location.href = "{{ url_for('generate_results', rubric_id=rubric_id, student_name=student_name) }}";
+            {% endif %}
+        }
+        
+        if (progress % 10 === 0 && messageIndex < messages.length) {
+            statusMessage.textContent = messages[messageIndex];
+            messageIndex++;
+        }
+    }, 500);
+</script>
+{% endblock %}

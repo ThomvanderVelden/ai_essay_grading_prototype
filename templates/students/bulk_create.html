@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Bulk Add Students - AI Essay Grading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Bulk Add Students</h2>
+    <a href="{{ url_for('view_students') }}" class="btn btn-outline-primary">Back to Students</a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Add Multiple Students</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label for="student_data" class="form-label">Student List</label>
+                <textarea class="form-control" id="student_data" name="student_data" rows="10" required
+                          placeholder="Enter one student per line. Format: Name, Email (email is optional)"></textarea>
+                <div class="form-text">
+                    <strong>Examples:</strong><br>
+                    John Smith, john@example.com<br>
+                    Jane Doe
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('view_students') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add Students</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}My Students - AI Essay Grading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Students</h2>
+    <div>
+        <a href="{{ url_for('bulk_create_students') }}" class="btn btn-outline-primary">Bulk Add Students</a>
+        <a href="{{ url_for('create_student') }}" class="btn btn-primary ms-2">Add Student</a>
+    </div>
+</div>
+
+{% if students %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Student List</h4>
+            <span class="badge bg-light text-dark">Total: {{ students|length }}</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Classes</th>
+                        <th>Essays</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.email or 'N/A' }}</td>
+                        <td>{{ student.classes|length }}</td>
+                        <td>{{ student.essays|length }}</td>
+                        <td>
+                            <a href="{{ url_for('view_student', student_id=student.id) }}" class="btn btn-sm btn-outline-info">View</a>
+                            <a href="{{ url_for('edit_student', student_id=student.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <p>You haven't added any students yet.</p>
+    <div class="mt-3">
+        <a href="{{ url_for('create_student') }}" class="btn btn-primary">Add Student</a>
+        <a href="{{ url_for('bulk_create_students') }}" class="btn btn-outline-primary ms-2">Bulk Add Students</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
